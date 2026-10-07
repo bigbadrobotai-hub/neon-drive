@@ -27,5 +27,12 @@ const positions=[];
 for(const hz of [30,60,144]){run('start();spawnClock=1000;keys.add("ArrowDown")');for(let i=0;i<hz/2;i++)run('update('+1/hz+')');positions.push(run('position'))}
 assert.ok(Math.max(...positions)-Math.min(...positions)<1e-10);
 assert.ok(run('CONFIG.PARALLAX.every((v,i,a)=>i===0||v>a[i-1])'));
+run('start();spawnClock=1000');
+const fixedX=run('player().x'),startY=run('player().y');
+key('keydown','ArrowUp');run('update(.1)');assert.equal(run('player().x'),fixedX);assert.ok(run('player().y')<startY);
+key('keyup','ArrowUp');key('keydown','ArrowDown');run('update(.1)');assert.equal(run('player().x'),fixedX);assert.ok(Math.abs(run('player().y')-startY)<1e-8);
+for(let i=0;i<200;i++){run('traffic=[];spawn()');assert.ok(run('traffic[0].v<CONFIG.MIN'));assert.ok(run('traffic[0].x>CONFIG.W'))}
+assert.ok(run('CONFIG.LANES[2]-CONFIG.LANES[0]')>200);
+console.log('PASS: vertical-only steering, wider lane range, all traffic slower than minimum player speed and spawned ahead.');
 console.log('PASS: immediate input, simultaneous keys, release, reversal, brake priority, focus loss, Escape repeat, frame-rate independence, parallax depth.');
 console.log('PASS: 11 sprites, selection, invalid selection, speed bounds, continued travel, steering limits, collision recovery, pause.');},20);
